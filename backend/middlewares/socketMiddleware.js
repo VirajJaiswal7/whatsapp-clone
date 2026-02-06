@@ -1,0 +1,20 @@
+import jwt from "jsonwebtoken";
+import { response } from "../utils/responseHandler.js";
+
+export const socketMiddleware = (socket, next) => {
+  const token =
+    socket.handshake.auth?.token ||
+    socket.handshake.headers["authorization"]?.split(" ")[1];
+
+  if (!token) {
+    return next(new Error("Authentication token missing"))
+  }
+  try {
+    const decode = jwt.verify(authToken, process.env.JWT_SECRET);
+    socket.user = decode;
+    next();
+  } catch (error) {
+    console.error(error);
+    return response(res, 401, "Invalid or expired token");
+  }
+};
