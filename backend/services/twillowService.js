@@ -1,11 +1,12 @@
-import twillo from "twilio";
+import twilio from "twilio";
+import "dotenv/config"
 
 // Twillo creaditials form env
 const accountSid = process.env.TWILLO_ACCOUNT_SID;
 const authToken = process.env.TWILLO_AUTH_TOKEN;
 const serviceSid = process.env.TWILLO_SERVICE_SID;
 
-const client = twillo(accountSid, authToken);
+const client = twilio(accountSid, authToken);
 
 export const sendOtpToPhoneNumber = async (phoneNumber) => {
   try {
