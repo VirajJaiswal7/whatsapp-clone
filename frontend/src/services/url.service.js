@@ -7,11 +7,11 @@ const axiosInstance = axios.create({
   // withCredentials: true,
 });
 
-axiosInstance.interceptors.request.use((config)=>{
-  const token = getToken()
-  if(token){
-    config.headers.Authorization = `Bearer ${token}`
+axiosInstance.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 export default axiosInstance;
