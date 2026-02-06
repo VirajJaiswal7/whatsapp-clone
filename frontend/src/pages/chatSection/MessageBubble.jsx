@@ -8,7 +8,7 @@ import {
   FaSmile,
 } from "react-icons/fa";
 import { HiDotsVertical } from "react-icons/hi";
-import useOutsideclick from "../../hooks/useOutSideClick";
+import useOutsideclick from "../../hooks/useOutsideclick";
 import EmojiPicker from "emoji-picker-react";
 import { RxCross2 } from "react-icons/rx";
 import { MdDelete } from "react-icons/md";
