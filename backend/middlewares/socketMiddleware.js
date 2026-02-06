@@ -10,7 +10,7 @@ export const socketMiddleware = (socket, next) => {
     return next(new Error("Authentication token missing"))
   }
   try {
-    const decode = jwt.verify(authToken, process.env.JWT_SECRET);
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
     socket.user = decode;
     next();
   } catch (error) {
