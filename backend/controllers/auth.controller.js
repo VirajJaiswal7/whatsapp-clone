@@ -33,7 +33,8 @@ export const sendOtp = async (req, res) => {
     }
 
     const fullPhoneNumber = `${phoneSuffix}${phoneNumber}`;
-    user = await User.findOne({ phoneNumber });
+    // user = await User.findOne({ phoneNumber });
+    user = await User.findOne({ phoneNumber, phoneSuffix });
     if (!user) {
       user = await new User({ phoneNumber, phoneSuffix });
     }
@@ -89,8 +90,15 @@ export const verifyOtp = async (req, res) => {
     }
 
     const token = generateToken(user?._id);
+    // res.cookie("auth_token", token, {
+    //   httpOnly: true,
+    //   maxAge: 1000 * 60 * 60 * 24 * 365,
+    // });
+
     res.cookie("auth_token", token, {
       httpOnly: true,
+      secure: true,
+      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24 * 365,
     });
 
@@ -162,7 +170,9 @@ export const getAllUsers = async (req, res) => {
   const loggedInUser = req.user.userId;
   try {
     const users = await User.find({ _id: { $ne: loggedInUser } })
-      .select("username profilePicture lastSeen isOnline about phoneNumber phoneSuffix")
+      .select(
+        "username profilePicture lastSeen isOnline about phoneNumber phoneSuffix",
+      )
       .lean();
 
     const userWithConversation = await Promise.all(

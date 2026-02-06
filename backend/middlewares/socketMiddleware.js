@@ -7,14 +7,16 @@ export const socketMiddleware = (socket, next) => {
     socket.handshake.headers["authorization"]?.split(" ")[1];
 
   if (!token) {
-    return next(new Error("Authentication token missing"))
+    return next(new Error("Authentication token missing"));
   }
   try {
     const decode = jwt.verify(token, process.env.JWT_SECRET);
     socket.user = decode;
     next();
   } catch (error) {
-    console.error(error);
-    return response(res, 401, "Invalid or expired token");
+    // console.error(error);
+    // return response(res, 401, "Invalid or expired token");
+    console.error("Socket auth error:", error.message);
+    return next(new Error("Invalid or expired token"));
   }
 };
