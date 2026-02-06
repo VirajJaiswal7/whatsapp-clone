@@ -109,17 +109,7 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
     };
   }, [messages, selectedContact, startTyping, stopTyping]);
 
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setSelectedFile(file);
-  //     setShowFileMenu(false);
 
-  //     if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
-  //       setFilePreview(URL.createObjectURL(file));
-  //     }
-  //   }
-  // };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -138,37 +128,8 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
     setShowFileMenu(false);
   };
 
-  // const handleSendMessage = async () => {
-  //   if (!selectedContact) return;
-  //   setFilePreview(null);
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append("senderId", user?._id);
-  //     formData.append("receiverId", selectedContact?._id);
 
-  //     const status = online ? "delivered" : "send";
-  //     formData.append("messageStatus", status);
-  //     if (message.trim()) {
-  //       formData.append("content", message.trim());
-  //     }
 
-  //     // if there is file include than too
-  //     if (selectedFile) {
-  //       formData.append("media", selectedFile, selectedFile.name);
-  //     }
-
-  //     if (!message.trim() && !selectedFile) return;
-  //     await sendMessage(formData);
-
-  //     // clear state
-  //     setMessage("");
-  //     setFilePreview(null);
-  //     setSelectedFile(null);
-  //     setShowFileMenu(false);
-  //   } catch (error) {
-  //     console.error("Failed to send message", error);
-  //   }
-  // };
 
   const handleSendMessage = async () => {
     if (!selectedContact) return;
@@ -384,16 +345,9 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
                 className="w-80 object-cover rounded shadow-lg mx-auto"
               />
             )}
-            {/* <img
-            src={filePreview}
-            alt="file-preview"
-            className="w-80 object-cover rounded shadow-lg mx-auto"
-          /> */}
+
             <button
-              // onClick={() => {
-              //   setSelectedFile(null);
-              //   setFilePreview(null);
-              // }}
+          
               onClick={() => {
                 setSelectedFile(null);
                 setFilePreview(null);

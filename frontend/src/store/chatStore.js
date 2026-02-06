@@ -107,17 +107,6 @@ export const useChatStore = create((set, get) => ({
         );
 
         if (otherUser._id) {
-          // socket.emit("get_user_status", otherUser._id, (status) => {
-          //   set((state) => {
-          //     const newOnlineUsers = new Map(state.onlineUsers);
-          //     newOnlineUsers.set(state.userId, {
-          //       isOnline: state.isOnline,
-          //       lastSeen: state.lastSeen,
-          //     });
-          //     return { onlineUsers: newOnlineUsers };
-          //   });
-          // });
-
           socket.emit("get_user_status", otherUser._id, (status) => {
             set((state) => {
               const newOnlineUsers = new Map(state.onlineUsers);

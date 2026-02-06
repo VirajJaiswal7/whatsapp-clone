@@ -77,7 +77,9 @@ export const verifyOtp = async (req, res) => {
         return response(res, 400, "Phone number and phone suffix are required");
       }
       const fullPhoneNumber = `${phoneSuffix}${phoneNumber}`;
-      user = await User.findOne({ phoneNumber });
+      // user = await User.findOne({ phoneNumber });
+      user = await User.findOne({ phoneNumber, phoneSuffix });
+
       if (!user) {
         return response(res, 404, "User not found");
       }
@@ -95,10 +97,17 @@ export const verifyOtp = async (req, res) => {
     //   maxAge: 1000 * 60 * 60 * 24 * 365,
     // });
 
+    // res.cookie("auth_token", token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "none",
+    //   maxAge: 1000 * 60 * 60 * 24 * 365,
+    // });
+
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24 * 365,
     });
 
@@ -151,7 +160,7 @@ export const checkAuthenticated = async (req, res) => {
     }
     return response(res, 200, "user retrived and allow to use whatsapp", user);
   } catch (error) {
-    console.error(erorr);
+    console.error(error);
     return response(res, 500, "Internal server error");
   }
 };
