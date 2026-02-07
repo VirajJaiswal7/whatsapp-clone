@@ -45,5 +45,5 @@ app.use("/api/chats", chatRouter);
 app.use("/api/status", statusRouter);
 
 server.listen(port, () => {
-  console.log(`Server is listning on http://localhost:/${port}`);
+  console.log(`Server is listning on http://localhost:${port}`);
 });
