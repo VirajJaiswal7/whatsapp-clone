@@ -391,9 +391,6 @@ const Login = () => {
             <p
               className={`text-center ${theme === "dark" ? "text-gray-300" : "text-gray-600"} mb-4`}
             >
-              {/* Please enter the 6-digit OTP send to your{" "}
-              {userPhoneData ? userPhoneData.phoneSuffix : "Email"}
-              {userPhoneData.phoneNumber && userPhoneData?.phoneNumber} */}
               Please enter the 6-digit OTP sent to your{" "}
               {userPhoneData?.email
                 ? userPhoneData.email

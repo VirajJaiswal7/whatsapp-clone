@@ -2,6 +2,7 @@ import { uploadFileToCloudinary } from "../config/cloudinary.config.js";
 import { Conversation } from "../models/conversation.model.js";
 import { Message } from "../models/message.model.js";
 import { response } from "../utils/responseHandler.js";
+import mongoose from "mongoose";
 
 export const sendMessage = async (req, res) => {
   try {
@@ -189,39 +190,6 @@ export const markAsRead = async (req, res) => {
   }
 };
 
-// export const deleteMessage = async (req, res) => {
-//   const { messageId } = req.params;
-//   const userId = req.user.userId;
-//   try {
-//     const message = await Message.findById(messageId);
-//     if (!message) {
-//       return response(res, 404, "Message not found");
-//     }
-
-//     if (message.sender.toString() !== userId) {
-//       return response(res, 403, "Not authorized to delete message");
-//     }
-
-//     await message.deleteOne();
-
-//     // Emit socket event
-//     if (req.io && req.socketUserMap) {
-//       const receiverSocketId = req.socketUserMap.get(
-//         message.receiver.toString(),
-//       );
-//       if (receiverSocketId) {
-//         req.io.to(receiverSocketId).emit("message_deleted", messageId);
-//       }
-//     }
-
-//     return response(res, 200, "Message deleted successfully");
-//   } catch (error) {
-//     console.log(error);
-//     return response(res, 500, "Internal server error");
-//   }
-// };
-import mongoose from "mongoose";
-
 export const deleteMessage = async (req, res) => {
   const { messageId } = req.params;
   const userId = req.user.userId;
@@ -242,9 +210,7 @@ export const deleteMessage = async (req, res) => {
   await message.deleteOne();
 
   if (req.io && req.socketUserMap) {
-    const receiverSocketId = req.socketUserMap.get(
-      message.receiver.toString(),
-    );
+    const receiverSocketId = req.socketUserMap.get(message.receiver.toString());
     if (receiverSocketId) {
       req.io.to(receiverSocketId).emit("message_deleted", messageId);
     }

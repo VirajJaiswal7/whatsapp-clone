@@ -89,9 +89,7 @@ export const viewStatus = async (req, res) => {
       return response(res, 404, "Status not found");
     }
     let updateStatus;
-    // if (!status.viewers.includes(userId)) {
-    //   status.viewers.push(userId);
-    //   await status.save();
+
     if (status.user.toString() !== userId) {
       if (!status.viewers.includes(userId)) {
         status.viewers.push(userId);
@@ -105,7 +103,6 @@ export const viewStatus = async (req, res) => {
         if (req.io && req.socketUserMap) {
           // Broadcast to all connecting users except the creator
           const statusOwnerSocketId = req.socketUserMap.get(
-            // status.user_id.toString(),
             status.user.toString(),
           );
           if (statusOwnerSocketId) {
@@ -116,7 +113,6 @@ export const viewStatus = async (req, res) => {
               viewers: updateStatus.viewers,
             };
 
-            // req.io.to[statusOwnerSocketId].emit("status_viewed", viewData);
             req.io.to(statusOwnerSocketId).emit("status_viewed", viewData);
           } else {
             console.log("status owener not connected");

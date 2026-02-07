@@ -98,37 +98,7 @@ export const initializeSocket = (server) => {
     });
 
     // handle typing start events and auto-stop after 3s
-    // socket.on("typing_start", ({ conversationId, receiverId }) => {
-    //   if (!userId || !conversationId || !receiverId) return;
-
-    //   if (!typingUsers.has(userId)) typingUsers.set(userId, {});
-
-    //   const userTyping = typingUsers.get(userId);
-
-    //   userTyping[conversationId] = true;
-
-    //   //   clear any existing timeout
-    //   if (userTyping[`${conversationId}_timeout`]) {
-    //     clearTimeout(userTyping[`${conversationId}_timeout`]);
-    //   }
-
-    //   // auto-stop after 3s
-    //   userTyping[`${conversationId}_timeout`] = setTimeout(() => {
-    //     userTyping[conversationId] = false;
-    //     socket.to(receiverId).emit("user_typing", {
-    //       userId,
-    //       conversationId,
-    //       isTyping: false,
-    //     });
-    //   }, 3000);
-
-    //   //   Notify receiver
-    //   socket.io(receiverId).emit("user_typing", {
-    //     userId,
-    //     conversationId,
-    //     isTyping: true,
-    //   });
-    // });
+  
     socket.on("typing_start", ({ conversationId, receiverId }) => {
       if (!userId || !conversationId || !receiverId) return;
 

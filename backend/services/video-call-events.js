@@ -29,7 +29,6 @@ export const handleVideoCallEvent = (socket, io, onlineUsers) => {
 
     if (callerSocketId) {
       io.to(callerSocketId).emit("call_accepted", {
-        // receiverId: socket.userId,
         callerName: receiverInfo.username,
         callerAvatar: receiverInfo.profilePicture,
         callId,
