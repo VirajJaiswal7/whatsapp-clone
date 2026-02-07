@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import useLoginStore from "../../store/useLoginStore";
-import countries from "../../utils/countriles";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +21,7 @@ import {
   updateUserProfile,
   verifyOtp,
 } from "../../services/user.service.js";
+import countries from "../../utils/countriles.jsx";
 
 const loginValidationSchema = yup
   .object()

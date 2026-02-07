@@ -14,7 +14,7 @@ const port = process.env.PORT;
 const app = express();
 
 const corsOption = {
-  origin: "https://whatsapp-clone-klvc.vercel.app",
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 };
 

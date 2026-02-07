@@ -13,7 +13,7 @@ const typingUsers = new Map();
 export const initializeSocket = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "https://whatsapp-clone-klvc.vercel.app",
+      origin: process.env.FRONTEND_URL,
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     },
@@ -98,7 +98,7 @@ export const initializeSocket = (server) => {
     });
 
     // handle typing start events and auto-stop after 3s
-
+  
     socket.on("typing_start", ({ conversationId, receiverId }) => {
       if (!userId || !conversationId || !receiverId) return;
 
