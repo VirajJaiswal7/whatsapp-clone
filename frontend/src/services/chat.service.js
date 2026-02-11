@@ -74,9 +74,17 @@ export const initializeSocket = () => {
   const BACKEND_URL = import.meta.env.VITE_API_URL;
 
   // Initialize Socket.IO client
+  // socket = io(BACKEND_URL, {
+  //   auth: { token }, // send JWT token to backend
+  //   transports: ["websocket", "polling"],
+  //   reconnectionAttempts: 5,
+  //   reconnectionDelay: 1000,
+  // });
+
   socket = io(BACKEND_URL, {
-    auth: { token }, // send JWT token to backend
-    transports: ["websocket", "polling"],
+    auth: { token },
+    withCredentials: true, // 🔥 REQUIRED in production
+    transports: ["websocket"], // force websocket
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
   });

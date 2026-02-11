@@ -22,6 +22,7 @@ import {
   verifyOtp,
 } from "../../services/user.service.js";
 import countries from "../../utils/countriles.jsx";
+import { initializeSocket } from "../../services/chat.service.js";
 
 const loginValidationSchema = yup
   .object()
@@ -172,6 +173,9 @@ const Login = () => {
         toast.success("OTP verify successfully");
         const token = response.data?.token;
         localStorage.setItem("auth_token", token);
+
+        // 🔥 ADD THIS LINE
+        initializeSocket();
         const user = response.data?.user;
         if (user?.username && user?.profilePicture) {
           setUser(user);
