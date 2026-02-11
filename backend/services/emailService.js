@@ -141,85 +141,129 @@
 //   }
 // };
 
+// import nodemailer from "nodemailer";
+// import "dotenv/config";
 
+// let transporter;
+
+// // Initialize transporter based on environment
+// const initTransporter = async () => {
+
+//   if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+//     // ✅ Production: Gmail or any SMTP
+//     transporter = nodemailer.createTransport({
+//       host: "smtp.gmail.com", // or any SMTP host
+//       port: 587,
+//       secure: false,
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS, // For Gmail, use App Password
+//       },
+//       tls: {
+//         rejectUnauthorized: false,
+//       },
+//     });
+//   } else {
+//     // ⚡ Fallback: Ethereal for testing
+//     const testAccount = await nodemailer.createTestAccount();
+//     transporter = nodemailer.createTransport({
+//       host: "smtp.ethereal.email",
+//       port: 587,
+//       secure: false,
+//       auth: {
+//         user: testAccount.user,
+//         pass: testAccount.pass,
+//       },
+//     });
+
+//     console.log("⚡ Using Ethereal test account:", testAccount.user);
+//   }
+
+//   // Verify transporter
+//   transporter.verify((error) => {
+//     if (error) {
+//       console.error("❌ Email transporter failed:", error.message);
+//     } else {
+//       console.log("✅ Email transporter ready");
+//     }
+//   });
+// };
+
+// // Initialize transporter immediately
+// initTransporter();
+
+// // Function to send OTP
+// export const sendOtpToEmail = async (toEmail, otp) => {
+//   if (!transporter) {
+//     throw new Error("Email transporter not initialized");
+//   }
+
+//   try {
+//     const info = await transporter.sendMail({
+//       from: `"WhatsApp Web" <${process.env.EMAIL_USER || "ethereal@test.com"}>`,
+//       to: toEmail,
+//       subject: "Your WhatsApp Verification Code",
+//       html: `
+//         <h2>🔐 WhatsApp Verification</h2>
+//         <p>Your OTP is:</p>
+//         <h1>${otp}</h1>
+//         <p>This OTP is valid for 5 minutes.</p>
+//       `,
+//     });
+
+//     console.log("✅ OTP sent to:", toEmail);
+
+//     // If using Ethereal, log the preview URL
+//     if (nodemailer.getTestMessageUrl(info)) {
+//       console.log("📄 Preview URL:", nodemailer.getTestMessageUrl(info));
+//     }
+//   } catch (error) {
+//     console.error("❌ Email send failed:", error);
+//     throw new Error("Email OTP failed");
+//   }
+// };
 
 import nodemailer from "nodemailer";
 import "dotenv/config";
 
 let transporter;
 
-// Initialize transporter based on environment
-const initTransporter = async () => {
-  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-    // ✅ Production: Gmail or any SMTP
-    transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com", // or any SMTP host
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // For Gmail, use App Password
-      },
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-  } else {
-    // ⚡ Fallback: Ethereal for testing
-    const testAccount = await nodemailer.createTestAccount();
-    transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
+export const initTransporter = async () => {
+  if (transporter) return transporter;
 
-    console.log("⚡ Using Ethereal test account:", testAccount.user);
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    throw new Error("Email credentials missing");
   }
 
-  // Verify transporter
-  transporter.verify((error) => {
-    if (error) {
-      console.error("❌ Email transporter failed:", error.message);
-    } else {
-      console.log("✅ Email transporter ready");
-    }
+  transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS, // App password
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
   });
+
+  await transporter.verify();
+  console.log("✅ Email transporter ready");
+
+  return transporter;
 };
 
-// Initialize transporter immediately
-initTransporter();
-
-// Function to send OTP
 export const sendOtpToEmail = async (toEmail, otp) => {
-  if (!transporter) {
-    throw new Error("Email transporter not initialized");
-  }
-
   try {
-    const info = await transporter.sendMail({
-      from: `"WhatsApp Web" <${process.env.EMAIL_USER || "ethereal@test.com"}>`,
+    const mailer = await initTransporter();
+
+    await mailer.sendMail({
+      from: `"WhatsApp" <${process.env.EMAIL_USER}>`,
       to: toEmail,
-      subject: "Your WhatsApp Verification Code",
-      html: `
-        <h2>🔐 WhatsApp Verification</h2>
-        <p>Your OTP is:</p>
-        <h1>${otp}</h1>
-        <p>This OTP is valid for 5 minutes.</p>
-      `,
+      subject: "Your OTP Code",
+      html: `<h1>${otp}</h1>`,
     });
-
-    console.log("✅ OTP sent to:", toEmail);
-
-    // If using Ethereal, log the preview URL
-    if (nodemailer.getTestMessageUrl(info)) {
-      console.log("📄 Preview URL:", nodemailer.getTestMessageUrl(info));
-    }
   } catch (error) {
-    console.error("❌ Email send failed:", error);
+    console.error("❌ Email send failed:", error.message);
     throw new Error("Email OTP failed");
   }
 };
