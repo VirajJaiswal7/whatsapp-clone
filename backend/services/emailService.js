@@ -348,6 +348,7 @@ export const sendOtpToEmail = async (toEmail, otp) => {
 
     await request;
     console.log("✅ OTP sent to email:", toEmail);
+    console.log("Sending OTP:", otp, "to:", toEmail);
   } catch (error) {
     console.error("❌ Mailjet Error:", error.message);
     throw new Error("Email OTP failed");
