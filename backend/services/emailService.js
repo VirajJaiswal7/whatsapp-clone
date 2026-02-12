@@ -270,40 +270,86 @@
 
 
 
-import { Resend } from "resend";
+// import { Resend } from "resend";
+// import "dotenv/config";
+
+// const resend = new Resend(process.env.RESEND_API_KEY);
+
+// export const sendOtpToEmail = async (toEmail, otp) => {
+//   try {
+//     if (!process.env.RESEND_API_KEY) {
+//       throw new Error("RESEND_API_KEY is missing in environment variables");
+//     }
+
+//     const { data, error } = await resend.emails.send({
+//       from: "WhatsApp <onboarding@resend.dev>", 
+//       to: toEmail,
+//       subject: "Your WhatsApp Verification Code",
+//       html: `
+//         <div style="font-family: Arial, sans-serif;">
+//           <h2>🔐 WhatsApp Verification</h2>
+//           <p>Your OTP is:</p>
+//           <h1 style="letter-spacing: 5px;">${otp}</h1>
+//           <p>This code is valid for 5 minutes.</p>
+//         </div>
+//       `,
+//     });
+
+//     if (error) {
+//       console.error("❌ Resend Error:", error);
+//       throw new Error("Email OTP failed");
+//     }
+
+//     console.log("✅ OTP sent successfully:", data?.id);
+
+//   } catch (err) {
+//     console.error("❌ Email send failed:", err.message);
+//     throw new Error("Email OTP failed");
+//   }
+// };
+
+
+
+import Mailjet from "node-mailjet";
 import "dotenv/config";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const mailjet = Mailjet.apiConnect(
+  process.env.MAILJET_API_KEY,
+  process.env.MAILJET_SECRET_KEY
+);
 
 export const sendOtpToEmail = async (toEmail, otp) => {
   try {
-    if (!process.env.RESEND_API_KEY) {
-      throw new Error("RESEND_API_KEY is missing in environment variables");
-    }
+    const request = mailjet
+      .post("send", { version: "v3.1" })
+      .request({
+        Messages: [
+          {
+            From: {
+              Email: "noreply@mailjet.com",
+              Name: "WhatsApp",
+            },
+            To: [
+              {
+                Email: toEmail,
+              },
+            ],
+            Subject: "Your WhatsApp Verification Code",
+            HTMLPart: `
+              <div style="font-family: Arial, sans-serif;">
+                <h2>🔐 WhatsApp Verification</h2>
+                <h1>${otp}</h1>
+                <p>This OTP is valid for 5 minutes.</p>
+              </div>
+            `,
+          },
+        ],
+      });
 
-    const { data, error } = await resend.emails.send({
-      from: "WhatsApp <onboarding@resend.dev>", 
-      to: toEmail,
-      subject: "Your WhatsApp Verification Code",
-      html: `
-        <div style="font-family: Arial, sans-serif;">
-          <h2>🔐 WhatsApp Verification</h2>
-          <p>Your OTP is:</p>
-          <h1 style="letter-spacing: 5px;">${otp}</h1>
-          <p>This code is valid for 5 minutes.</p>
-        </div>
-      `,
-    });
-
-    if (error) {
-      console.error("❌ Resend Error:", error);
-      throw new Error("Email OTP failed");
-    }
-
-    console.log("✅ OTP sent successfully:", data?.id);
-
-  } catch (err) {
-    console.error("❌ Email send failed:", err.message);
+    await request;
+    console.log("✅ OTP sent to email:", toEmail);
+  } catch (error) {
+    console.error("❌ Mailjet Error:", error.message);
     throw new Error("Email OTP failed");
   }
 };
