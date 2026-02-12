@@ -223,47 +223,87 @@
 //   }
 // };
 
-import nodemailer from "nodemailer";
+// import nodemailer from "nodemailer";
+// import "dotenv/config";
+
+// let transporter;
+
+// export const initTransporter = async () => {
+//   if (transporter) return transporter;
+
+//   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+//     throw new Error("Email credentials missing");
+//   }
+
+//   transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.EMAIL_USER,
+//       pass: process.env.EMAIL_PASS, // App password
+//     },
+//     connectionTimeout: 10000,
+//     greetingTimeout: 10000,
+//     socketTimeout: 10000,
+//   });
+
+//   await transporter.verify();
+//   console.log("✅ Email transporter ready");
+
+//   return transporter;
+// };
+
+// export const sendOtpToEmail = async (toEmail, otp) => {
+//   try {
+//     const mailer = await initTransporter();
+
+//     await mailer.sendMail({
+//       from: `"WhatsApp" <${process.env.EMAIL_USER}>`,
+//       to: toEmail,
+//       subject: "Your OTP Code",
+//       html: `<h1>${otp}</h1>`,
+//     });
+//   } catch (error) {
+//     console.error("❌ Email send failed:", error.message);
+//     throw new Error("Email OTP failed");
+//   }
+// };
+
+
+
+import { Resend } from "resend";
 import "dotenv/config";
 
-let transporter;
-
-export const initTransporter = async () => {
-  if (transporter) return transporter;
-
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    throw new Error("Email credentials missing");
-  }
-
-  transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS, // App password
-    },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
-  });
-
-  await transporter.verify();
-  console.log("✅ Email transporter ready");
-
-  return transporter;
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendOtpToEmail = async (toEmail, otp) => {
   try {
-    const mailer = await initTransporter();
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is missing in environment variables");
+    }
 
-    await mailer.sendMail({
-      from: `"WhatsApp" <${process.env.EMAIL_USER}>`,
+    const { data, error } = await resend.emails.send({
+      from: "WhatsApp <onboarding@resend.dev>", 
       to: toEmail,
-      subject: "Your OTP Code",
-      html: `<h1>${otp}</h1>`,
+      subject: "Your WhatsApp Verification Code",
+      html: `
+        <div style="font-family: Arial, sans-serif;">
+          <h2>🔐 WhatsApp Verification</h2>
+          <p>Your OTP is:</p>
+          <h1 style="letter-spacing: 5px;">${otp}</h1>
+          <p>This code is valid for 5 minutes.</p>
+        </div>
+      `,
     });
-  } catch (error) {
-    console.error("❌ Email send failed:", error.message);
+
+    if (error) {
+      console.error("❌ Resend Error:", error);
+      throw new Error("Email OTP failed");
+    }
+
+    console.log("✅ OTP sent successfully:", data?.id);
+
+  } catch (err) {
+    console.error("❌ Email send failed:", err.message);
     throw new Error("Email OTP failed");
   }
 };
